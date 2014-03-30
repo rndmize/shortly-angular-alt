@@ -1,8 +1,8 @@
 <!-------------------- navigation bar -------------------->
-<div class='navigation'>
+<div class='navigation' ng-controller="navController">
 <ul>
-  <li><a href='#' class='index'>All Links</a></li>
-  <li><a href='#' class='create'>Shorten</a></li>
+  <li><a href='#' class='index' ng-click="display()">All Links</a></li>
+  <li><a href='#' class='create' ng-click="display()">Shorten</a></li>
 </ul>
   <a href='/logout' class='logout'>Logout</a>
 </div>
@@ -13,18 +13,23 @@
 
 
 <div ng-controller="linkController">
-  <div class="link" ng-repeat="link in links">
-    <img src='/redirect_icon.png'/>
-    <div class='info'>
-      <div class='visits'><span class='count'>{{link.visits}}</span>Visits</div>
-      <div class='title'>{{link.title}}</div>
-      <div class='original'>{{link.url}}</div>
-      <a href='{{link.base_url}}/{{link.code}}'>{{link.base_url}}/{{link.code}}</a>
+  <div ng-show="!show">
+    <input class='text' type='text' name='search' ng-model="searchText" placeholder="search links">
+    <div class="link" ng-repeat="link in links | orderBy: '-visits' | filter:searchText">
+      <img src='/redirect_icon.png'/>
+      <div class='info'>
+        <div class='visits'><span class='count'>{{link.visits}}</span>Visits</div>
+        <div class='title'>{{link.title}}</div>
+        <div class='original'>{{link.url}}</div>
+        <a href='{{link.base_url}}/{{link.code}}'>{{link.base_url}}/{{link.code}}</a>
+      </div>
     </div>
   </div>
 
-  <form ng-submit="addLink()">
-      <input class='text' type='text' name='url' ng-model="linkText" placeholder="enter url here">
+  <form ng-submit="addLink()" ng-show="show" name="linkerator">
+      <input class='text' type='url' name='url' ng-model="linkText" placeholder="enter url here">
+      <span class="error" ng-show="linkerator.input.$error.url">
+    Not valid url!</span>
       <input type='submit' value='Shorten'>
   </form>
 </div>

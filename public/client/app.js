@@ -18,9 +18,19 @@ app.run(function($rootScope) {
   $rootScope.name = 'someone else';
 });
 
-app.controller('linkController', function($scope, $http, get_Links) {
+app.controller('navController', function($rootScope, $scope, get_Links) {
+  $rootScope.show = false;
+  $scope.display = function() {
+    $rootScope.show = !$rootScope.show;
+    get_Links.getLinks().then(function(data){
+      $rootScope.links = data.data;
+    });
+  };
+});
+
+app.controller('linkController', function($rootScope, $scope, $http, get_Links) {
   get_Links.getLinks().then(function(data){
-    $scope.links = data.data;
+    $rootScope.links = data.data;
   });
   $scope.addLink = function() {
     $http({
@@ -28,13 +38,19 @@ app.controller('linkController', function($scope, $http, get_Links) {
       url: '/links',
       data: {url: $scope.linkText}
     });
+    $scope.linkText = '';
   };
 });
 
 // app router*******************************************************
-app.config(function($routeProvider, $locationProvider){
-  $routeProvider
+app.config(['$routeProvider',
+  function($routeProvider){
+    $routeProvider
     .when('/create', {
-      templateUrl: 'signup.ejs'
+      templateUrl: '/views/signup.ejs'
+    }).
+    otherwise({
+      redirectTo: '/views/login.ejs'
     });
-});
+  }
+]);
